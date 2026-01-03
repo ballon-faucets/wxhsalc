@@ -43,11 +43,17 @@ namespace ClashXW.Services
             return _httpClient.PatchAsJsonAsync($"{_apiBaseUrl}/configs", payload);
         }
 
-        public Task UpdateTunModeAsync(bool isEnabled)
+        public async Task UpdateTunModeAsync(bool isEnabled)
         {
-            if (string.IsNullOrEmpty(_apiBaseUrl)) return Task.CompletedTask;
+            if (string.IsNullOrEmpty(_apiBaseUrl)) return;
             var payload = new TunUpdateRequest(new TunEnableRequest(isEnabled));
-            return _httpClient.PatchAsJsonAsync($"{_apiBaseUrl}/configs", payload);
+            var response = await _httpClient.PatchAsJsonAsync($"{_apiBaseUrl}/configs", payload);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                throw new HttpRequestException($"Status: {response.StatusCode}, Response: {errorContent}");
+            }
         }
 
         public Task SelectProxyNodeAsync(string groupName, string nodeName)
