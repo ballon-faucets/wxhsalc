@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Forms;
 using ClashXW.Models;
 using ClashXW.Native;
 
@@ -41,16 +42,19 @@ namespace ClashXW.Services
 
             // System Proxy toggle
             var systemProxyEnabled = IsSystemProxyEnabled(configs);
-            menu.AddItem($"Set System Proxy\tCtrl+S", () => onSystemProxyToggle(!systemProxyEnabled), systemProxyEnabled);
+            menu.AddItemWithShortcut($"Set System Proxy\tCtrl+S", () => onSystemProxyToggle(!systemProxyEnabled),
+                Keys.S, ctrl: true, alt: false, systemProxyEnabled);
 
             // TUN Mode toggle
             var tunEnabled = configs?.Tun?.Enable ?? false;
-            menu.AddItem($"TUN Mode\tCtrl+E", () => onTunModeToggle(!tunEnabled), tunEnabled);
+            menu.AddItemWithShortcut($"TUN Mode\tCtrl+E", () => onTunModeToggle(!tunEnabled),
+                Keys.E, ctrl: true, alt: false, tunEnabled);
 
             menu.AddSeparator();
 
             // Actions
-            menu.AddItem("Open Dashboard\tCtrl+D", onOpenDashboard);
+            menu.AddItemWithShortcut("Open Dashboard\tCtrl+D", onOpenDashboard,
+                Keys.D, ctrl: true, alt: false);
             menu.AddItem("Test Latency", onTestLatency);
 
             // Configuration submenu
@@ -73,11 +77,14 @@ namespace ClashXW.Services
 
             var modeMenu = menu.AddSubMenu($"Mode ({modeDisplay})");
 
-            modeMenu.AddItem("Rule\tAlt+R", () => onModeSelected("rule"),
+            modeMenu.AddItemWithShortcut("Rule\tAlt+R", () => onModeSelected("rule"),
+                Keys.R, ctrl: false, alt: true,
                 currentMode.Equals("rule", StringComparison.OrdinalIgnoreCase));
-            modeMenu.AddItem("Direct\tAlt+D", () => onModeSelected("direct"),
+            modeMenu.AddItemWithShortcut("Direct\tAlt+D", () => onModeSelected("direct"),
+                Keys.D, ctrl: false, alt: true,
                 currentMode.Equals("direct", StringComparison.OrdinalIgnoreCase));
-            modeMenu.AddItem("Global\tAlt+G", () => onModeSelected("global"),
+            modeMenu.AddItemWithShortcut("Global\tAlt+G", () => onModeSelected("global"),
+                Keys.G, ctrl: false, alt: true,
                 currentMode.Equals("global", StringComparison.OrdinalIgnoreCase));
         }
 
@@ -143,9 +150,11 @@ namespace ClashXW.Services
             configMenu.AddSeparator();
 
             // Config actions
-            configMenu.AddItem("Reload Config\tCtrl+R", onReloadConfig);
+            configMenu.AddItemWithShortcut("Reload Config\tCtrl+R", onReloadConfig,
+                Keys.R, ctrl: true, alt: false);
             configMenu.AddItem("Edit Config", onEditConfig);
-            configMenu.AddItem("Open Config Folder\tCtrl+O", onOpenConfigFolder);
+            configMenu.AddItemWithShortcut("Open Config Folder\tCtrl+O", onOpenConfigFolder,
+                Keys.O, ctrl: true, alt: false);
         }
 
         private bool IsSystemProxyEnabled(ClashConfig? configs)

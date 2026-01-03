@@ -10,6 +10,19 @@ namespace ClashXW.Native
         public int Y;
     }
 
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct MSG
+    {
+        public IntPtr hwnd;
+        public uint message;
+        public UIntPtr wParam;
+        public IntPtr lParam;
+        public uint time;
+        public POINT pt;
+    }
+
+    internal delegate IntPtr HookProc(int nCode, IntPtr wParam, IntPtr lParam);
+
     internal static class NativeMethods
     {
         // Menu creation and destruction
@@ -46,6 +59,27 @@ namespace ClashXW.Native
         [DllImport("user32.dll", SetLastError = true)]
         internal static extern IntPtr PostMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
 
+        [DllImport("user32.dll", SetLastError = true)]
+        internal static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+
+        // Hooks
+        [DllImport("user32.dll", SetLastError = true)]
+        internal static extern IntPtr SetWindowsHookEx(int idHook, HookProc lpfn, IntPtr hMod, uint dwThreadId);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        internal static extern bool UnhookWindowsHookEx(IntPtr hhk);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        internal static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        internal static extern uint GetCurrentThreadId();
+
+        // Keyboard state
+        [DllImport("user32.dll")]
+        internal static extern short GetKeyState(int nVirtKey);
+
         // Menu flags
         internal const uint MF_STRING = 0x00000000;
         internal const uint MF_SEPARATOR = 0x00000800;
@@ -66,5 +100,18 @@ namespace ClashXW.Native
 
         // Messages
         internal const uint WM_NULL = 0x0000;
+        internal const uint WM_KEYDOWN = 0x0100;
+        internal const uint WM_SYSKEYDOWN = 0x0104;
+        internal const uint WM_CANCELMODE = 0x001F;
+
+        // Hook types
+        internal const int WH_MSGFILTER = -1;
+
+        // Message filter codes
+        internal const int MSGF_MENU = 2;
+
+        // Virtual key codes
+        internal const int VK_CONTROL = 0x11;
+        internal const int VK_MENU = 0x12; // Alt key
     }
 }
