@@ -25,6 +25,7 @@ namespace ClashXW
         // Cache for menu state
         private ClashConfig? _cachedConfigs;
         private ProxiesResponse? _cachedProxies;
+        private DashboardForm? _dashboardForm;
 
         public TrayApplicationContext()
         {
@@ -256,14 +257,25 @@ namespace ClashXW
             var apiDetails = ConfigManager.ReadApiDetails(_currentConfigPath);
             if (apiDetails == null || string.IsNullOrEmpty(apiDetails.DashboardUrl)) return;
 
-            try
+            // Show existing window or create new
+            if (_dashboardForm != null && !_dashboardForm.IsDisposed)
             {
-                Process.Start(new ProcessStartInfo(apiDetails.DashboardUrl) { UseShellExecute = true });
+                _dashboardForm.Activate();
+                return;
             }
-            catch (Exception ex)
-            {
-                ShowBalloonTip("Error", $"Failed to open dashboard: {ex.Message}", ToolTipIcon.Error);
-            }
+
+            _dashboardForm = new DashboardForm(apiDetails.DashboardUrl);
+            _dashboardForm.Show();
+
+            // OLD IMPLEMENTATION (preserved):
+            // try
+            // {
+            //     Process.Start(new ProcessStartInfo(apiDetails.DashboardUrl) { UseShellExecute = true });
+            // }
+            // catch (Exception ex)
+            // {
+            //     ShowBalloonTip("Error", $"Failed to open dashboard: {ex.Message}", ToolTipIcon.Error);
+            // }
         }
 
         private async void OnTestLatency()
