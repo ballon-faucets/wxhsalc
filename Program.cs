@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Windows.Forms;
+using ClashXW.Services;
 
 namespace ClashXW
 {
@@ -24,6 +25,10 @@ namespace ClashXW
                 Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
+
+                // Initialize dark mode support before creating any windows
+                DarkModeHelper.Initialize();
+
                 Application.Run(new TrayApplicationContext());
             }
             finally

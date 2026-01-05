@@ -25,6 +25,18 @@ namespace ClashXW
             Controls.Add(_webView);
         }
 
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            base.OnHandleCreated(e);
+
+            // Apply dark mode to window title bar
+            if (DarkModeHelper.IsDarkModeSupported)
+            {
+                DarkModeHelper.AllowDarkModeForWindow(Handle, true);
+                DarkModeHelper.RefreshTitleBarThemeColor(Handle);
+            }
+        }
+
         protected override async void OnLoad(EventArgs e)
         {
             base.OnLoad(e);

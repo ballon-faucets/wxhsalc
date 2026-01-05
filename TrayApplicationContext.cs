@@ -78,6 +78,12 @@ namespace ClashXW
                 baseIcon = defaultStream != null ? new Icon(defaultStream) : SystemIcons.Application;
             }
 
+            // Invert icon colors for dark mode (black icon -> white icon)
+            if (DarkModeHelper.IsDarkModeEnabled)
+            {
+                baseIcon = InvertIconColors(baseIcon);
+            }
+
             // Apply lightening filter when system proxy is off
             if (!_isSystemProxyEnabled)
             {
@@ -112,6 +118,35 @@ namespace ClashXW
                 GraphicsUnit.Pixel, attributes);
 
             var result = Icon.FromHandle(lightenedBitmap.GetHicon());
+            icon.Dispose();
+            return result;
+        }
+
+        private Icon InvertIconColors(Icon icon)
+        {
+            using var originalBitmap = icon.ToBitmap();
+            var invertedBitmap = new Bitmap(originalBitmap.Width, originalBitmap.Height, PixelFormat.Format32bppArgb);
+
+            // Color matrix to invert RGB while preserving alpha
+            var colorMatrix = new ColorMatrix(new float[][]
+            {
+                new float[] { -1, 0, 0, 0, 0 },
+                new float[] { 0, -1, 0, 0, 0 },
+                new float[] { 0, 0, -1, 0, 0 },
+                new float[] { 0, 0, 0, 1, 0 },   // Keep alpha unchanged
+                new float[] { 1, 1, 1, 0, 1 }    // Add 1 to RGB to complete inversion
+            });
+
+            using var attributes = new ImageAttributes();
+            attributes.SetColorMatrix(colorMatrix, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
+
+            using var g = Graphics.FromImage(invertedBitmap);
+            g.DrawImage(originalBitmap,
+                new Rectangle(0, 0, invertedBitmap.Width, invertedBitmap.Height),
+                0, 0, originalBitmap.Width, originalBitmap.Height,
+                GraphicsUnit.Pixel, attributes);
+
+            var result = Icon.FromHandle(invertedBitmap.GetHicon());
             icon.Dispose();
             return result;
         }
