@@ -480,7 +480,12 @@ namespace ClashXW
 
             try
             {
-                Process.Start(new ProcessStartInfo("notepad.exe", _currentConfigPath) { UseShellExecute = true });
+                // open the config file with default program that is associated with extension "yml" and "yaml"
+                Process.Start(new ProcessStartInfo(_currentConfigPath)
+                {
+                    UseShellExecute = true,
+                    Verb = "open",
+                });
             }
             catch (Exception ex)
             {
