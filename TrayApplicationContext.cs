@@ -424,8 +424,7 @@ namespace ClashXW
                 return;
             }
 
-            var dashboardUrl = apiDetails.DashboardUrl.Replace("0.0.0.0", "127.0.0.1");
-            _dashboardForm = new DashboardForm(dashboardUrl);
+            _dashboardForm = new DashboardForm(apiDetails.DashboardUrl);
             DashboardWindowPlacementManager.Restore(_dashboardForm);
             _dashboardForm.Show();
 
