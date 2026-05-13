@@ -86,8 +86,8 @@ namespace ClashXW
                 baseIcon = InvertIconColors(baseIcon);
             }
 
-            // Apply lightening filter when system proxy is off
-            if (!_isSystemProxyEnabled)
+            // Apply lightening filter when system proxy is off (skip when TUN mode is enabled)
+            if (!_isSystemProxyEnabled && !_isTunEnabled)
             {
                 return ApplyLighteningFilter(baseIcon);
             }
@@ -424,7 +424,8 @@ namespace ClashXW
                 return;
             }
 
-            _dashboardForm = new DashboardForm(apiDetails.DashboardUrl);
+            var dashboardUrl = apiDetails.DashboardUrl.Replace("0.0.0.0", "127.0.0.1");
+            _dashboardForm = new DashboardForm(dashboardUrl);
             DashboardWindowPlacementManager.Restore(_dashboardForm);
             _dashboardForm.Show();
 
